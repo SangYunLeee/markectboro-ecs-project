@@ -55,14 +55,6 @@ resource "aws_ecs_task_definition" "record_task" {
       },
       "environment": [
         {
-          "name": "ACCESS_KEY_ID",
-          "value": "${var.ACCESS_KEY_ID}"
-        },
-        {
-          "name": "SECRET_ACCESS_KEY",
-          "value": "${var.SECRET_KEY}"
-        },
-        {
           "name": "DYNAMODB_TABLE_NAME",
           "value": "${aws_dynamodb_table.product.name}"
         }
