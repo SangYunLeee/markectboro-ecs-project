@@ -12,8 +12,8 @@ env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: marketboro
   ECS_SERVICE: tf-ecs-service
-  ECS_CLUSTER: tf-simple-cluster
-  CONTAINER_NAME: tf-simple-task
+  ECS_CLUSTER: tf-marketboro-cluster
+  CONTAINER_NAME: tf-marketboro-task
 
 jobs:
   deploy:

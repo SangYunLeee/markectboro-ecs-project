@@ -4,5 +4,9 @@ variable "aws_region" {
 
 variable "ECR_IMAGE_URL" {
   type        = string
-  default = "587649217574.dkr.ecr.ap-northeast-2.amazonaws.com/marketboro:0.5"
 }
+
+variable "DOMAIN_NAME" {
+  default     = "sororiri.click"
+}
+

@@ -3,14 +3,14 @@
 ##                   E   C   S                     #
 ####################################################
 
-resource "aws_ecs_cluster" "simple_cluster" {
-  name = "tf-simple-cluster"
+resource "aws_ecs_cluster" "marketboro_cluster" {
+  name = "tf-marketboro-cluster"
 }
 
-resource "aws_ecs_service" "ecs_simple_service" {
+resource "aws_ecs_service" "ecs_backend_service" {
   name                               = "tf-ecs-service"
-  cluster                            = aws_ecs_cluster.simple_cluster.id
-  task_definition                    = aws_ecs_task_definition.record_task.arn
+  cluster                            = aws_ecs_cluster.marketboro_cluster.id
+  task_definition                    = aws_ecs_task_definition.backend_task.arn
   desired_count                      = 1
   deployment_minimum_healthy_percent = 50
   deployment_maximum_percent         = 200
@@ -25,17 +25,17 @@ resource "aws_ecs_service" "ecs_simple_service" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.ecs_record_target_group.arn
-    container_name   = "tf-simple-task"
+    container_name   = "tf-marketboro-task"
     container_port   = 80
   }
 }
 
-resource "aws_ecs_task_definition" "record_task" {
-  family                   = "tf-simple-task"
+resource "aws_ecs_task_definition" "backend_task" {
+  family                   = "tf-marketboro-task"
   container_definitions    = <<DEFINITION
   [
     {
-      "name": "tf-simple-task",
+      "name": "tf-marketboro-task",
       "image": "${var.ECR_IMAGE_URL}",
       "essential": true,
       "portMappings": [
@@ -103,13 +103,13 @@ resource "aws_alb_target_group" "ecs_record_target_group" {
   }
 }
 
-resource "aws_alb_listener" "http_record" {
+resource "aws_lb_listener" "https_record" {
   load_balancer_arn = aws_lb.record_lb.id
   port              = 80
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = aws_alb_target_group.ecs_record_target_group.id
+    target_group_arn = aws_alb_target_group.ecs_record_target_group.arn
     type             = "forward"
   }
 }
