@@ -1,9 +1,10 @@
-variable "aws_region" {
+variable "AWS_REGION" {
   default     = "ap-northeast-2"
 }
 
-variable "ECR_IMAGE_URL" {
+variable "API_VERSION" {
   type        = string
+  default = "NONE"
 }
 
 variable "DOMAIN_NAME" {

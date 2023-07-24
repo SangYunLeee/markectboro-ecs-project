@@ -16,6 +16,7 @@ ECS 와 Fargate 를 활용한 아키텍쳐입니다. ALB 를 통해 백엔드 �
 
 ### CI / CD 아키텍쳐
 백앤드 소스가 변경되면 도커 이미지 생성 후 ECR 에 태그와 함께 저장한 뒤, Task-Definition 을 변경함을 통해 CI / CD 가 이루어집니다.
+
 ![image](https://github.com/SangYunLeee/markectboro-ecs-project/assets/35091494/54535e93-68e2-4ec2-aac4-a9757a9f6bdc)
 
 

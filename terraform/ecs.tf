@@ -3,14 +3,14 @@
 ##                   E   C   S                     #
 ####################################################
 
-resource "aws_ecs_cluster" "marketboro_cluster" {
+resource "aws_ecs_cluster" "cluster" {
   name = "tf-marketboro-cluster"
 }
 
 resource "aws_ecs_service" "ecs_backend_service" {
   name                               = "tf-ecs-service"
-  cluster                            = aws_ecs_cluster.marketboro_cluster.id
-  task_definition                    = aws_ecs_task_definition.backend_task.arn
+  cluster                            = aws_ecs_cluster.cluster.id
+  task_definition                    = aws_ecs_task_definition.backend.arn
   desired_count                      = 1
   deployment_minimum_healthy_percent = 50
   deployment_maximum_percent         = 200
@@ -24,19 +24,19 @@ resource "aws_ecs_service" "ecs_backend_service" {
   }
 
   load_balancer {
-    target_group_arn = aws_alb_target_group.ecs_record_target_group.arn
+    target_group_arn = aws_alb_target_group.backend_tg.arn
     container_name   = "tf-marketboro-task"
     container_port   = 80
   }
 }
 
-resource "aws_ecs_task_definition" "backend_task" {
+resource "aws_ecs_task_definition" "backend" {
   family                   = "tf-marketboro-task"
   container_definitions    = <<DEFINITION
   [
     {
       "name": "tf-marketboro-task",
-      "image": "${var.ECR_IMAGE_URL}",
+      "image": "${aws_ecr_repository.private_repo.repository_url}:${var.API_VERSION}",
       "essential": true,
       "portMappings": [
         {
@@ -50,7 +50,7 @@ resource "aws_ecs_task_definition" "backend_task" {
         "options": {
           "awslogs-region": "ap-northeast-2",
           "awslogs-stream-prefix": "app-logstream",
-          "awslogs-group": "${aws_cloudwatch_log_group.ecs_record_service_log_group.name}"
+          "awslogs-group": "${aws_cloudwatch_log_group.markectboro_service_log_group.name}"
         }
       },
       "environment": [
@@ -70,23 +70,23 @@ resource "aws_ecs_task_definition" "backend_task" {
   task_role_arn = aws_iam_role.ecsTaskExecutionRole.arn
 }
 
-resource "aws_cloudwatch_log_group" "ecs_record_service_log_group" {
-  name = "tf-record-ecs-service-loggroup"
+resource "aws_cloudwatch_log_group" "markectboro_service_log_group" {
+  name = "tf-marketboro-ecs-service-loggroup"
 }
 
 #############################################
 ##               A   L   B                  #
 #############################################
-resource "aws_lb" "record_lb" {
-  name               = "tf-record-alb"
+resource "aws_lb" "backend_lb" {
+  name               = "tf-marketboro-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.public_sg.id]
   subnets            = module.vpc.public_subnets
 }
 
-resource "aws_alb_target_group" "ecs_record_target_group" {
-  name        = "tf-record-tg"
+resource "aws_alb_target_group" "backend_tg" {
+  name        = "tf-marketboro-tg"
   port        = 80
   protocol    = "HTTP"
   vpc_id      = module.vpc.vpc_id
@@ -103,13 +103,13 @@ resource "aws_alb_target_group" "ecs_record_target_group" {
   }
 }
 
-resource "aws_lb_listener" "https_record" {
-  load_balancer_arn = aws_lb.record_lb.id
+resource "aws_lb_listener" "https_marketboro" {
+  load_balancer_arn = aws_lb.backend_lb.id
   port              = 80
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = aws_alb_target_group.ecs_record_target_group.arn
+    target_group_arn = aws_alb_target_group.backend_tg.arn
     type             = "forward"
   }
 }

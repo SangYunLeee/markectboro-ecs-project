@@ -1,5 +1,5 @@
 provider "aws" {
-  region = var.aws_region
+  region = var.AWS_REGION
 }
 
 resource "aws_route53_zone" "new_hosted_zone" {
@@ -16,15 +16,15 @@ resource "aws_route53_record" "external_dns" {
   zone_id        = aws_route53_zone.new_hosted_zone.zone_id
   name           = "api.${var.DOMAIN_NAME}"
   type           = "A"
-  set_identifier = var.aws_region
+  set_identifier = var.AWS_REGION
 
   latency_routing_policy {
-    region = var.aws_region
+    region = var.AWS_REGION
   }
 
   alias {
-    name                   = aws_lb.record_lb.dns_name
-    zone_id                = aws_lb.record_lb.zone_id
+    name                   = aws_lb.backend_lb.dns_name
+    zone_id                = aws_lb.backend_lb.zone_id
     evaluate_target_health = true
   }
 }

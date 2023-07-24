@@ -10,7 +10,7 @@ on:
 
 env:
   AWS_REGION: ap-northeast-2
-  ECR_REPOSITORY: marketboro
+  ECR_REPOSITORY: tf-marketboro-backend
   ECS_SERVICE: tf-ecs-service
   ECS_CLUSTER: tf-marketboro-cluster
   CONTAINER_NAME: tf-marketboro-task
